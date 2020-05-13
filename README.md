@@ -4,10 +4,13 @@ docker image for auditing a Swarm/UCP cluster to return the core counts and othe
 based off of alpine:latest
 
 To pull this image:
-`docker pull mbentley/audit cluster`
+`docker pull mbentley/audit-cluster`
 
 Example usage:
 
 ```
-docker run -t --rm -v /var/run/docker.sock:/var/run/docker.sock -e affinity:container==ucp-controller mbentley/audit-cluster
+docker run -t --rm --name audit-cluster \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -e affinity:container==ucp-controller \
+  mbentley/audit-cluster
 ```
