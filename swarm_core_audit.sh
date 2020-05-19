@@ -2,14 +2,33 @@
 
 set -e
 
-# set curl command to be able to re-use it and help readability of the script
-CURL_CMD="curl -s -m 5 --unix-socket /var/run/docker.sock http://v1.30"
-
-# check to see if the docker socket is available
-if [ ! -S /var/run/docker.sock ]
+# check to see DOCKER_HOST is set & set curl command to be able to re-use it and help readability of the script
+if [ -n "${UCP_URL}" ]
 then
-  echo "ERROR: Docker socket not found at /var/run/docker.sock"
-  exit 1
+  CURL_CMD="curl -s -m 15 --cacert /data/ca.pem --key /data/key.pem --cert /data/cert.pem https://${UCP_URL}"
+
+  # check to see if the UCP endpoint is available
+  if [ "$(curl -s --cacert /data/ca.pem "https://${UCP_URL}/_ping")" != "OK" ]
+  then
+    # try without the cacert
+    if [ "$(curl -s "https://${UCP_URL}/_ping")" != "OK" ]
+    then
+      echo "ERROR: UCP unavailable/unhealthy at https://${UCP_URL}/_ping"
+      exit 1
+    else
+      # if this works, we need to not include the CA cert
+      CURL_CMD="curl -s -m 15 --key /data/key.pem --cert /data/cert.pem https://${UCP_URL}"
+    fi
+  fi
+else
+  CURL_CMD="curl -s -m 5 --unix-socket /var/run/docker.sock http://v1.30"
+
+  # check to see if the docker socket is available
+  if [ ! -S /var/run/docker.sock ]
+  then
+    echo "ERROR: Docker socket not found at /var/run/docker.sock"
+    exit 1
+  fi
 fi
 
 # shellcheck disable=SC2086
