@@ -41,20 +41,35 @@ fi
 
 pull_node_data() {
   # output for type
-  echo -e "Data for ${1} nodes:"
+  if [ "${2}" = "linux" ] || [ "${2}" = "windows" ]
+  then
+    echo -e "Data for ${1} nodes running ${2}:"
+  else
+    echo -e "Data for ${1} nodes:"
+  fi
 
   # add filter for managers or workers
   if [ "${1}" = "manager" ] || [ "${1}" = "worker" ]
   then
     NODE_FILTER="?filters=%7B%22role%22%3A%7B%22${1}%22%3Atrue%7D%7D"
+  else
+    NODE_FILTER=""
   fi
 
-  # shellcheck disable=SC2086
-  # get the number of nano CPUs reported from Swarm on each node
-  nanoCPUs="$(for NODE in $(${CURL_CMD}/nodes${NODE_FILTER} | jq -r '.[]|.ID'); do ${CURL_CMD}/nodes/"${NODE}" | jq -r .Description.Resources.NanoCPUs; done)"
+  # see if we are looking for just linux or windows nodes
+  if [ "${2}" = "linux" ] || [ "${2}" = "windows" ]
+  then
+    # shellcheck disable=SC2086
+    # get the number of nano CPUs reported from Swarm on each node for the specified OS
+    nanoCPUs="$(for NODE in $(${CURL_CMD}/nodes${NODE_FILTER} | jq -r '.[]|select(.Description.Platform.OS|contains("'"${2}"'"))|.ID'); do ${CURL_CMD}/nodes/"${NODE}" | jq -r .Description.Resources.NanoCPUs; done)"
+  else
+    # shellcheck disable=SC2086
+    # get the number of nano CPUs reported from Swarm on each node
+    nanoCPUs="$(for NODE in $(${CURL_CMD}/nodes${NODE_FILTER} | jq -r '.[]|.ID'); do ${CURL_CMD}/nodes/"${NODE}" | jq -r .Description.Resources.NanoCPUs; done)"
+  fi
 
   # convery nano CPUs to CPUs
-  CPUs=$(for i in ${nanoCPUs}; do   echo "$((i/1000000000))"; done)
+  CPUs=$(for i in ${nanoCPUs}; do echo "$((i/1000000000))"; done)
 
   # get the sum of all CPU counts
   ttlCPU="$(COUNT=0; TOTAL=0; for i in ${CPUs};do TOTAL=$(echo "${TOTAL}+${i}" | bc ); ((COUNT++)); done; echo "${TOTAL}")"
@@ -92,4 +107,8 @@ echo "========================"
 pull_node_data manager
 echo "========================"
 pull_node_data worker
+echo "========================"
+pull_node_data all linux
+echo "========================"
+pull_node_data all windows
 echo "========================"
