@@ -66,6 +66,25 @@ If you are running in a secured environment or use Docker Content Trust policy e
     Max Core - 4
     Avg Core - 3.33
     ========================
+    Data for all nodes running linux:
+    2 Core x 4
+    4 Core x 9
+
+    # Nodes - 13
+    Ttl Core - 44
+    Min Core - 2
+    Max Core - 4
+    Avg Core - 3.38
+    ========================
+    Data for all nodes running windows:
+    4 Core x 2
+
+    # Nodes - 2
+    Ttl Core - 8
+    Min Core - 4
+    Max Core - 4
+    Avg Core - 4.00
+    ========================
     ```
 
    In the above example, the cluster has 15 nodes, 4 nodes have 2 cores each, 11 nodes have 4 cores each.
