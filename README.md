@@ -1,10 +1,10 @@
-# mbentley/audit-cluster
+# mirantis/audit-cluster
 
 docker image for auditing a Swarm/UCP cluster to return the core counts and other sizing stats
 based off of alpine:latest
 
 To pull this image:
-`docker pull mbentley/audit-cluster`
+`docker pull mirantis/audit-cluster`
 
 ## Example usage
 
@@ -26,7 +26,7 @@ If you are running in a secured environment or use Docker Content Trust policy e
     docker run -t --rm --name audit-cluster \
       -v /var/run/docker.sock:/var/run/docker.sock \
       -e affinity:container==ucp-controller \
-      mbentley/audit-cluster
+      mirantis/audit-cluster
     ```
 
 1. Data will be returned:
@@ -35,7 +35,7 @@ If you are running in a secured environment or use Docker Content Trust policy e
     $ docker run -t --rm --name audit-cluster \
         -v /var/run/docker.sock:/var/run/docker.sock \
         -e affinity:container==ucp-controller \
-        mbentley/audit-cluster
+        mirantis/audit-cluster
     ========================
     Data for all nodes:
     2 Core x 4
@@ -80,7 +80,7 @@ If you are running in a secured environment or use Docker Content Trust policy e
     docker run -t --rm --name audit-cluster \
       -e UCP_URL="ucp.example.com" \
       -v /path/to/your/client/bundle:/data:ro \
-      mbentley/audit-cluster
+      mirantis/audit-cluster
     ```
 
 1. Results will be returned:
@@ -89,7 +89,7 @@ If you are running in a secured environment or use Docker Content Trust policy e
     $ docker run -t --rm --name audit-cluster \
         -e UCP_URL="ucp.example.com" \
         -v /path/to/your/client/bundle:/data:ro \
-        mbentley/audit-cluster
+        mirantis/audit-cluster
     ========================
     Data for all nodes:
     2 Core x 4
